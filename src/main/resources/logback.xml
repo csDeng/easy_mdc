@@ -1,0 +1,35 @@
+<!--每隔15s 重新加载日志配置文件-->
+<configuration scan="true" scanPeriod="15 seconds">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+<!--            %X{var} 注入var变量的内容-->
+            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} [%X{logId}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+<!--    定义变量-->
+    <property name="LOG_DIR" value="logs" />
+    <property name="LOG_FILE" value="detail.log" />
+
+<!--    注意不要用错class -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${LOG_FILE}</file>
+<!--        压缩归档策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_DIR}/${LOG_FILE}.%d{yyyy-MM-dd-HH-mm}.gz</fileNamePattern>
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss} [%thread] %-5level %logger{36} [%X{logId}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
